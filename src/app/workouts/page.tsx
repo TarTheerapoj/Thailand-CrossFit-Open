@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Target, TrendingUp, ImageIcon } from "lucide-react";
 import { WORKOUTS, type WorkoutDivision } from "@/lib/data/workouts";
-import ScoreDistributionChart from "@/components/charts/ScoreDistributionChart";
-import Image from "next/image";
+import { useRankingsData } from "@/hooks/useRankingsData";
 import { cn } from "@/lib/utils";
 
 const DIVISION_COLORS: Record<WorkoutDivision["name"], { bg: string; text: string; border: string }> = {
@@ -14,6 +13,150 @@ const DIVISION_COLORS: Record<WorkoutDivision["name"], { bg: string; text: strin
   Scaled:      { bg: "#111",      text: "#9BEC00",  border: "#333" },
   Foundations: { bg: "#3b82f6",   text: "#fff",     border: "#3b82f6" },
 };
+
+type GenderFilter = "all" | "men" | "women";
+
+function RankingsTable({ workout }: { workout: typeof WORKOUTS[0] }) {
+  const [gender, setGender] = useState<GenderFilter>("all");
+  const { data: raw, loading, error } = useRankingsData();
+
+  const { men, women } = useMemo(() => {
+    const isValid = (reps: string, div: string) =>
+      reps && reps !== "0" && reps !== "Null" && div && div !== "-";
+
+    const menRows = raw
+      .filter((r) => isValid(r["Reps Men"], r["Division Men"]) && r["Division Men"] === "RX")
+      .map((r) => ({ rank: r["TH Rank"], reps: Number(r["Reps Men"]), division: r["Division Men"] }));
+
+    const womenRows = raw
+      .filter((r) => isValid(r["Reps Women"], r["Division Women"]) && r["Division Women"] === "RX")
+      .map((r) => ({ rank: r["TH Rank"], reps: Number(r["Reps Women"]), division: r["Division Women"] }));
+
+    return { men: menRows, women: womenRows };
+  }, [raw]);
+
+  const GENDER_FILTERS: { key: GenderFilter; label: string; color: string; text: string }[] = [
+    { key: "all",   label: "ทั้งหมด", color: "#9BEC00", text: "#111" },
+    { key: "men",   label: "ชาย",     color: "#3b82f6", text: "#fff" },
+    { key: "women", label: "หญิง",    color: "#f472b6", text: "#fff" },
+  ];
+
+  if (!workout.id.startsWith("26")) return null;
+
+  return (
+    <div className="space-y-4">
+      {/* Header + filter */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <p className="text-xs font-black text-foreground/50 uppercase tracking-widest">
+            Thailand RX Rankings · {workout.name}
+          </p>
+          {!loading && !error && (
+            <p className="text-[10px] text-muted-foreground mt-0.5">
+              ชาย {men.length} คน · หญิง {women.length} คน
+            </p>
+          )}
+        </div>
+        <div className="flex gap-1.5">
+          {GENDER_FILTERS.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setGender(f.key)}
+              className="px-3 py-1 rounded text-xs font-bold transition-all"
+              style={{
+                backgroundColor: gender === f.key ? f.color : "transparent",
+                color: gender === f.key ? f.text : "#888",
+                border: `1.5px solid ${gender === f.key ? f.color : "#bbb"}`,
+              }}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="py-10 flex items-center justify-center">
+          <p className="text-xs text-muted-foreground">กำลังโหลดข้อมูล...</p>
+        </div>
+      ) : error ? (
+        <div className="py-10 flex items-center justify-center">
+          <p className="text-xs text-red-500">โหลดข้อมูลไม่สำเร็จ</p>
+        </div>
+      ) : (
+        <div className={cn(
+          "grid gap-4",
+          gender === "all" ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1 max-w-lg"
+        )}>
+          {(gender === "all" || gender === "men") && (
+            <RankColumn
+              title="Men Rx"
+              accent="#3b82f6"
+              rows={men}
+            />
+          )}
+          {(gender === "all" || gender === "women") && (
+            <RankColumn
+              title="Women Rx"
+              accent="#f472b6"
+              rows={women}
+            />
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RankColumn({ title, accent, rows }: {
+  title: string;
+  accent: string;
+  rows: { rank: string; reps: number; division: string }[];
+}) {
+  const top = rows[0]?.reps ?? 0;
+  return (
+    <div className="rounded-xl border border-border/50 overflow-hidden">
+      {/* Column header */}
+      <div className="px-4 py-2.5 flex items-center gap-2 border-b border-border/40"
+        style={{ backgroundColor: `${accent}15` }}>
+        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: accent }} />
+        <p className="text-xs font-black uppercase tracking-widest" style={{ color: accent }}>{title}</p>
+        <span className="ml-auto text-[10px] text-muted-foreground">{rows.length} คน</span>
+      </div>
+      {/* Table header */}
+      <div className="grid grid-cols-12 px-4 py-1.5 bg-secondary/30 border-b border-border/30">
+        <span className="col-span-2 text-[10px] font-bold text-muted-foreground uppercase">#</span>
+        <span className="col-span-6 text-[10px] font-bold text-muted-foreground uppercase">Reps</span>
+        <span className="col-span-4 text-[10px] font-bold text-muted-foreground uppercase text-right">% of #1</span>
+      </div>
+      {/* Rows */}
+      <div className="max-h-80 overflow-y-auto divide-y divide-border/20">
+        {rows.map((row, i) => {
+          const pct = top > 0 ? Math.round((row.reps / top) * 100) : 0;
+          const isTop3 = i < 3;
+          return (
+            <div key={i}
+              className="grid grid-cols-12 px-4 py-2.5 items-center hover:bg-secondary/30 transition-colors">
+              <span className={cn(
+                "col-span-2 text-xs font-black",
+                i === 0 ? "text-yellow-500" : i === 1 ? "text-zinc-400" : i === 2 ? "text-amber-600" : "text-muted-foreground"
+              )}>
+                {isTop3 ? ["🥇","🥈","🥉"][i] : `#${row.rank}`}
+              </span>
+              <div className="col-span-6 flex items-center gap-2">
+                <div className="h-1.5 rounded-full flex-1 max-w-[80px] bg-border/30 overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: accent }} />
+                </div>
+                <span className="text-sm font-bold">{row.reps}</span>
+              </div>
+              <span className="col-span-4 text-xs text-muted-foreground text-right">{pct}%</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 function WorkoutCard({ workout }: { workout: typeof WORKOUTS[0] }) {
   const [activeDivision, setActiveDivision] = useState<WorkoutDivision["name"]>("Rx");
@@ -23,9 +166,8 @@ function WorkoutCard({ workout }: { workout: typeof WORKOUTS[0] }) {
     <Card className="border-border/50 bg-card overflow-hidden">
       <div className="h-1" style={{ background: "linear-gradient(to right, #9BEC00, #9BEC0060, transparent)" }} />
 
-      {/* Header row */}
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-start gap-4 flex-wrap">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
               <CardTitle className="text-2xl font-black tracking-tight">{workout.name}</CardTitle>
@@ -50,59 +192,49 @@ function WorkoutCard({ workout }: { workout: typeof WORKOUTS[0] }) {
 
       <CardContent className="space-y-6">
 
-        {/* Main content: image + description side by side */}
+        {/* Image + description */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-
-          {/* Left: Image slot */}
-          <div className="order-1">
+          <div>
             {workout.image ? (
-              <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-border/50">
-                <Image
+              <div className="w-full aspect-[4/3] rounded-xl overflow-hidden border border-border/50">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={workout.image}
                   alt={`CrossFit Open ${workout.name}`}
-                  fill
-                  className="object-cover"
+                  className="w-full h-full object-cover object-top"
                 />
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center w-full aspect-video rounded-xl border-2 border-dashed border-border/40 bg-secondary/30">
+              <div className="flex flex-col items-center justify-center w-full aspect-[4/3] rounded-xl border-2 border-dashed border-border/40 bg-secondary/30">
                 <ImageIcon className="w-8 h-8 text-muted-foreground/30 mb-2" />
-                <p className="text-xs text-muted-foreground/50 font-medium">Workout image</p>
-                <p className="text-[10px] text-muted-foreground/30 mt-0.5">อัปโหลดรูปประกอบ workout</p>
+                <p className="text-xs text-muted-foreground/50">อัปโหลดรูปประกอบ workout</p>
               </div>
             )}
           </div>
 
-          {/* Right: Division tabs + description */}
-          <div className="order-2 space-y-3">
-            {/* Division tabs */}
+          <div className="space-y-3">
             <div className="flex gap-2">
               {workout.divisions.map((d) => {
                 const c = DIVISION_COLORS[d.name];
                 const isActive = activeDivision === d.name;
                 return (
-                  <button
-                    key={d.name}
-                    onClick={() => setActiveDivision(d.name)}
+                  <button key={d.name} onClick={() => setActiveDivision(d.name)}
                     className="px-3 py-1 rounded-md text-xs font-black tracking-wide transition-all"
                     style={{
                       backgroundColor: isActive ? c.bg : "transparent",
                       color: isActive ? c.text : "#888",
                       border: `1.5px solid ${isActive ? c.border : "#ccc"}`,
-                    }}
-                  >
+                    }}>
                     {d.name}
                   </button>
                 );
               })}
             </div>
 
-            {/* Movement description */}
-            <pre className="text-xs text-muted-foreground whitespace-pre-wrap bg-secondary/50 rounded-lg p-3 font-sans leading-relaxed border border-border/50 min-h-[140px]">
+            <pre className="text-xs text-muted-foreground whitespace-pre-wrap bg-secondary/50 rounded-lg p-3 font-sans leading-relaxed border border-border/50">
               {div.description}
             </pre>
 
-            {/* Equipment */}
             <div className="rounded-lg border border-border/50 overflow-hidden">
               <div className="px-3 py-2 bg-secondary/50 border-b border-border/40">
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">อุปกรณ์ · {activeDivision}</p>
@@ -121,13 +253,11 @@ function WorkoutCard({ workout }: { workout: typeof WORKOUTS[0] }) {
           </div>
         </div>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {/* Rx stats only */}
+        <div className="grid grid-cols-2 gap-3">
           {[
-            { label: "ค่าเฉลี่ย (Rx)",    value: workout.avgScoreRx,    icon: Target,    color: "text-primary" },
-            { label: "สูงสุด (Rx)",       value: workout.topScoreRx,    icon: TrendingUp, color: "text-green-600" },
-            { label: "ค่าเฉลี่ย (Scaled)", value: workout.avgScoreScaled, icon: Target,    color: "text-blue-600" },
-            { label: "สูงสุด (Scaled)",    value: workout.topScoreScaled, icon: TrendingUp, color: "text-yellow-600" },
+            { label: "ค่าเฉลี่ย (Rx)", value: workout.avgScoreRx,  icon: Target,    color: "text-primary" },
+            { label: "สูงสุด (Rx)",    value: workout.topScoreRx,   icon: TrendingUp, color: "text-green-600" },
           ].map(({ label, value, icon: Icon, color }) => (
             <div key={label} className="bg-card rounded-xl p-3 border border-border/50">
               <div className="flex items-center gap-1.5 mb-1">
@@ -139,42 +269,8 @@ function WorkoutCard({ workout }: { workout: typeof WORKOUTS[0] }) {
           ))}
         </div>
 
-        {/* Rx vs Scaled + Score distribution */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
-          <div className="space-y-5">
-            <p className="text-xs font-black text-foreground/50 uppercase tracking-widest">อัตราการทำ Rx vs Scaled</p>
-            <div className="space-y-2">
-              <div className="flex w-full h-8 rounded overflow-hidden">
-                <div
-                  className="flex items-center justify-center text-xs font-black text-[#111] tracking-wide"
-                  style={{ width: `${workout.completionRateRx}%`, backgroundColor: "#9BEC00" }}
-                >
-                  {workout.completionRateRx}%
-                </div>
-                <div
-                  className="flex items-center justify-center text-xs font-black text-white tracking-wide"
-                  style={{ width: `${workout.completionRateScaled}%`, backgroundColor: "#1a1a1a" }}
-                >
-                  {workout.completionRateScaled}%
-                </div>
-              </div>
-              <div className="flex justify-between text-[11px] font-bold">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ backgroundColor: "#9BEC00" }} />
-                  <span className="text-foreground/70">Rx</span>
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="text-foreground/70">Scaled</span>
-                  <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ backgroundColor: "#1a1a1a" }} />
-                </span>
-              </div>
-            </div>
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">การกระจายคะแนน</p>
-            <ScoreDistributionChart data={workout.scoreDistribution} />
-          </div>
-        </div>
+        {/* Rankings */}
+        <RankingsTable workout={workout} />
 
       </CardContent>
     </Card>
