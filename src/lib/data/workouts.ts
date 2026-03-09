@@ -1,10 +1,17 @@
+export interface WorkoutDivision {
+  name: "Rx" | "Scaled" | "Foundations";
+  description: string;
+  equipment: { women: string; men: string };
+}
+
 export interface Workout {
   id: string;
   name: string;
-  description: string;
+  type: "AMRAP" | "For Time" | "Max Weight";
   timeCapMinutes: number;
   movements: string[];
-  type: "AMRAP" | "For Time" | "Max Weight";
+  divisions: WorkoutDivision[];
+  image?: string;
   completionRateRx: number;
   completionRateScaled: number;
   avgScoreRx: string;
@@ -14,78 +21,76 @@ export interface Workout {
   scoreDistribution: { label: string; count: number }[];
 }
 
+const WORKOUT_26_1_DESCRIPTION = `For time:
+20 wall-ball shots
+18 box jump-overs
+30 wall-ball shots
+18 box jump-overs
+40 wall-ball shots
+18 medicine-ball box step-overs
+66 wall-ball shots
+18 medicine-ball box step-overs
+40 wall-ball shots
+18 box jump-overs
+30 wall-ball shots
+18 box jump-overs
+20 wall-ball shots
+
+Time cap: 12 minutes`;
+
 export const WORKOUTS: Workout[] = [
   {
-    id: "25.1",
-    name: "25.1",
-    description:
-      "Complete as many reps as possible in 15 minutes of:\n3 wall walks\n12 dumbbell snatches (50/35 lb)\n15 box jumps (24/20 in)",
-    timeCapMinutes: 15,
-    movements: ["Wall Walks", "Dumbbell Snatches", "Box Jumps"],
-    type: "AMRAP",
-    completionRateRx: 72,
-    completionRateScaled: 28,
-    avgScoreRx: "218 reps",
-    avgScoreScaled: "165 reps",
-    topScoreRx: "245 reps",
-    topScoreScaled: "210 reps",
-    scoreDistribution: [
-      { label: "< 150", count: 45 },
-      { label: "150–179", count: 88 },
-      { label: "180–209", count: 124 },
-      { label: "210–229", count: 97 },
-      { label: "230+", count: 42 },
-    ],
-  },
-  {
-    id: "25.2",
-    name: "25.2",
-    description:
-      "For time (20-min cap):\nClean & jerk (135/95 lb)\n50 double-unders\nClean & jerk (185/125 lb)\n50 double-unders\nClean & jerk (225/155 lb)\n50 double-unders\nMax clean & jerk (275/185 lb)",
-    timeCapMinutes: 20,
-    movements: ["Clean & Jerk", "Double-Unders"],
+    id: "26.1",
+    name: "26.1",
     type: "For Time",
-    completionRateRx: 58,
-    completionRateScaled: 42,
-    avgScoreRx: "155 lb / 8:24",
-    avgScoreScaled: "115 lb / 9:12",
-    topScoreRx: "180 lb / 4:32",
-    topScoreScaled: "145 lb / 5:18",
-    scoreDistribution: [
-      { label: "Ladder 1", count: 62 },
-      { label: "Ladder 2", count: 98 },
-      { label: "Ladder 3", count: 134 },
-      { label: "Ladder 4", count: 56 },
-      { label: "Finished", count: 46 },
+    timeCapMinutes: 12,
+    movements: ["Wall-Ball Shots", "Box Jump-Overs", "Medicine-Ball Box Step-Overs"],
+    image: "/workouts/26-1.jpg",
+    divisions: [
+      {
+        name: "Rx",
+        description: WORKOUT_26_1_DESCRIPTION,
+        equipment: {
+          women: "14-lb (6-kg) medicine ball, 9-foot target, 20-inch box",
+          men: "20-lb (9-kg) medicine ball, 10-ft target, 24-inch box",
+        },
+      },
+      {
+        name: "Scaled",
+        description: WORKOUT_26_1_DESCRIPTION.replace("box jump-overs", "box jump-overs"),
+        equipment: {
+          women: "10-lb (4-kg) medicine ball, 9-foot target, 20-inch box (may step up)",
+          men: "14-lb (6-kg) medicine ball, 10-foot target, 24-inch box (may step up)",
+        },
+      },
+      {
+        name: "Foundations",
+        description: WORKOUT_26_1_DESCRIPTION.replace(/box jump-overs/g, "box step-overs"),
+        equipment: {
+          women: "10-lb (4-kg) medicine ball to a 9-foot target, 20-inch box",
+          men: "14-lb (6-kg) medicine ball to a 10-foot target, 20-inch box",
+        },
+      },
     ],
-  },
-  {
-    id: "25.3",
-    name: "25.3",
-    description:
-      "Complete as many reps as possible in 15 minutes of:\n10 thrusters (95/65 lb)\n10 chest-to-bar pull-ups\n10 thrusters\n10 bar muscle-ups",
-    timeCapMinutes: 15,
-    movements: ["Thrusters", "Chest-to-Bar Pull-Ups", "Bar Muscle-Ups"],
-    type: "AMRAP",
     completionRateRx: 65,
     completionRateScaled: 35,
-    avgScoreRx: "290 reps",
-    avgScoreScaled: "245 reps",
-    topScoreRx: "322 reps",
-    topScoreScaled: "288 reps",
+    avgScoreRx: "—",
+    avgScoreScaled: "—",
+    topScoreRx: "—",
+    topScoreScaled: "—",
     scoreDistribution: [
-      { label: "< 220", count: 38 },
-      { label: "220–259", count: 76 },
-      { label: "260–289", count: 142 },
-      { label: "290–309", count: 89 },
-      { label: "310+", count: 51 },
+      { label: "< 3:00", count: 0 },
+      { label: "3:00–5:59", count: 0 },
+      { label: "6:00–8:59", count: 0 },
+      { label: "9:00–11:59", count: 0 },
+      { label: "Time Cap", count: 0 },
     ],
   },
 ];
 
 export const SUMMARY_STATS = {
-  totalAthletes: 396,
-  totalAffiliates: 22,
+  totalAthletes: 604,
+  totalAffiliates: 24,
   totalProvinces: 18,
   year: 2026,
   edition: "CrossFit Open 25",
@@ -100,12 +105,15 @@ export const SUMMARY_STATS = {
     { name: "Women Masters 40-44", count: 6 },
   ],
   participationByYear: [
-    { year: 2020, athletes: 180 },
-    { year: 2021, athletes: 210 },
-    { year: 2022, athletes: 248 },
-    { year: 2023, athletes: 302 },
-    { year: 2024, athletes: 358 },
-    { year: 2025, athletes: 382 },
-    { year: 2026, athletes: 396 },
+    { year: 2017, men: 101, women: 69,  total: 170 },
+    { year: 2018, men: 153, women: 116, total: 269 },
+    { year: 2019, men: 114, women: 77,  total: 191 },
+    { year: 2020, men: 77,  women: 69,  total: 146 },
+    { year: 2021, men: 79,  women: 76,  total: 155 },
+    { year: 2022, men: 82,  women: 93,  total: 175 },
+    { year: 2023, men: 98,  women: 100, total: 198 },
+    { year: 2024, men: 116, women: 116, total: 232 },
+    { year: 2025, men: 201, women: 159, total: 360 },
+    { year: 2026, men: 308, women: 296, total: 604 },
   ],
 };

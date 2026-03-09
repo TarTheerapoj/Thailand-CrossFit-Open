@@ -7,10 +7,10 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "ภาพรวม", icon: BarChart3 },
-  { href: "/leaderboard", label: "ลีดเดอร์บอร์ด", icon: Trophy },
-  { href: "/workouts", label: "เวิร์คเอาท์", icon: Dumbbell },
-  { href: "/provinces", label: "จังหวัด", icon: MapPin },
+  { href: "/dashboard",   label: "ภาพรวม",          icon: BarChart3, comingSoon: false },
+  { href: "/workouts",    label: "เวิร์คเอาท์",       icon: Dumbbell,  comingSoon: false },
+  { href: "/leaderboard", label: "ลีดเดอร์บอร์ด",  icon: Trophy,    comingSoon: true  },
+  { href: "/provinces",   label: "จังหวัด",          icon: MapPin,    comingSoon: true  },
 ];
 
 export default function Navbar() {
@@ -33,20 +33,32 @@ export default function Navbar() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                pathname === href
-                  ? "bg-primary/15 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-black/5"
-              )}
-            >
-              <Icon className="w-4 h-4" />
-              {label}
-            </Link>
+          {NAV_ITEMS.map(({ href, label, icon: Icon, comingSoon }) => (
+            comingSoon ? (
+              <span
+                key={href}
+                className="relative flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground/50 cursor-not-allowed select-none"
+                title="Coming Soon"
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+                <span className="absolute -top-1 -right-1 text-[8px] font-black tracking-wide px-1 py-0.5 rounded" style={{ backgroundColor: "#9BEC00", color: "#111", lineHeight: 1 }}>SOON</span>
+              </span>
+            ) : (
+              <Link
+                key={href}
+                href={href}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                  pathname === href
+                    ? "bg-primary/15 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-black/5"
+                )}
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </Link>
+            )
           ))}
         </nav>
 
@@ -68,21 +80,32 @@ export default function Navbar() {
       {mobileOpen && (
         <div className="md:hidden border-t border-border/50 bg-background/95">
           <nav className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1">
-            {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                onClick={() => setMobileOpen(false)}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
-                  pathname === href
-                    ? "bg-primary/15 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-black/5"
-                )}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </Link>
+            {NAV_ITEMS.map(({ href, label, icon: Icon, comingSoon }) => (
+              comingSoon ? (
+                <span
+                  key={href}
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground/50 cursor-not-allowed select-none"
+                >
+                  <Icon className="w-4 h-4" />
+                  {label}
+                  <span className="ml-auto text-[9px] font-black tracking-wide px-1.5 py-0.5 rounded" style={{ backgroundColor: "#9BEC00", color: "#111" }}>SOON</span>
+                </span>
+              ) : (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setMobileOpen(false)}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
+                    pathname === href
+                      ? "bg-primary/15 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-black/5"
+                  )}
+                >
+                  <Icon className="w-4 h-4" />
+                  {label}
+                </Link>
+              )
             ))}
           </nav>
         </div>

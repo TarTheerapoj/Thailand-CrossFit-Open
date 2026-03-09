@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ComingSoonWrapper from "@/components/ComingSoonWrapper";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -53,6 +54,10 @@ export default function LeaderboardPage() {
   );
 
   return (
+    <ComingSoonWrapper
+      title="ลีดเดอร์บอร์ด"
+      description="ข้อมูลอันดับและผลการแข่งขันของนักกีฬาไทยทุก Division กำลังจะถูกอัปเดต ติดตามได้เร็วๆ นี้"
+    >
     <div className="space-y-8">
       {/* Dark hero header */}
       <section className="bg-[#111] text-white relative overflow-hidden">
@@ -178,5 +183,6 @@ export default function LeaderboardPage() {
       )}
       </div>
     </div>
+    </ComingSoonWrapper>
   );
 }

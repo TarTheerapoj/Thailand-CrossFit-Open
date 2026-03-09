@@ -3,11 +3,16 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Users, Building2 } from "lucide-react";
 import { PROVINCE_STATS, AFFILIATES } from "@/lib/data/athletes";
 import ProvinceChart from "@/components/charts/ProvinceChart";
+import ComingSoonWrapper from "@/components/ComingSoonWrapper";
 
 export default function ProvincesPage() {
   const totalAthletes = PROVINCE_STATS.reduce((s, p) => s + p.athletes, 0);
 
   return (
+    <ComingSoonWrapper
+      title="สถิติรายจังหวัด"
+      description="ข้อมูลการกระจายตัวนักกีฬาและ CrossFit Affiliate แยกตามจังหวัดทั่วประเทศไทย กำลังจะถูกอัปเดต ติดตามได้เร็วๆ นี้"
+    >
     <div className="space-y-8">
       {/* Dark hero header */}
       <section className="bg-[#111] text-white relative overflow-hidden">
@@ -118,5 +123,6 @@ export default function ProvincesPage() {
       </Card>
       </div>
     </div>
+    </ComingSoonWrapper>
   );
 }
