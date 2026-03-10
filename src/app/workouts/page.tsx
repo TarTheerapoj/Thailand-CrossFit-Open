@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, ImageIcon } from "lucide-react";
+import { Clock, ImageIcon, ExternalLink } from "lucide-react";
 import { WORKOUTS, type WorkoutDivision } from "@/lib/data/workouts";
 import { useRankingsData } from "@/hooks/useRankingsData";
 import { cn } from "@/lib/utils";
@@ -374,6 +374,24 @@ function WorkoutStats({ workout }: { workout: typeof WORKOUTS[0] }) {
   );
 }
 
+function MovementBadge({ name, slug }: { name: string; slug?: string }) {
+  if (slug) {
+    return (
+      <a
+        href={`/movements/${slug}`}
+        className="inline-flex items-center gap-1 text-xs border rounded-full px-2.5 py-0.5 font-medium transition-all hover:shadow-sm"
+        style={{ borderColor: "#9BEC0060", color: "#9BEC00", backgroundColor: "#9BEC0010" }}
+      >
+        {name}
+        <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+      </a>
+    );
+  }
+  return (
+    <Badge variant="outline" className="text-xs border-border/50 text-muted-foreground">{name}</Badge>
+  );
+}
+
 function WorkoutCard({ workout }: { workout: typeof WORKOUTS[0] }) {
   const [activeDivision, setActiveDivision] = useState<WorkoutDivision["name"]>("Rx");
   const div = workout.divisions.find(d => d.name === activeDivision) ?? workout.divisions[0];
@@ -396,8 +414,12 @@ function WorkoutCard({ workout }: { workout: typeof WORKOUTS[0] }) {
               </Badge>
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {workout.movements.map(m => (
-                <Badge key={m} variant="outline" className="text-xs border-border/50 text-muted-foreground">{m}</Badge>
+              {workout.movements.map((m, i) => (
+                <MovementBadge
+                  key={m}
+                  name={m}
+                  slug={workout.movementSlugs?.[i]}
+                />
               ))}
             </div>
           </div>

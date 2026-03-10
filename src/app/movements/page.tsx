@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Search, ChevronRight, BookOpen, CheckCircle2, List, GitBranch, ChevronDown, ChevronRight as ChevronRightIcon, Youtube } from "lucide-react";
+import { Search, ChevronRight, BookOpen, CheckCircle2, List, GitBranch, ChevronDown, ChevronRight as ChevronRightIcon, Youtube, SlidersHorizontal, X, Zap, ArrowUpDown } from "lucide-react";
 import {
   getAllMovements,
   CATEGORY_LABEL,
@@ -16,6 +16,38 @@ import {
 const ACCENT = "#9BEC00";
 
 const ALL_MOVEMENTS = getAllMovements();
+
+// Derive all unique equipment values from catalog (sorted, capped for UI)
+const ALL_EQUIPMENT: string[] = [
+  ...new Set(
+    ALL_MOVEMENTS.flatMap(m => m.equipment)
+      .filter(Boolean)
+      .sort()
+  ),
+];
+
+type SortOption = "default" | "name-asc" | "difficulty-asc" | "difficulty-desc" | "detail-first";
+
+const SORT_OPTIONS: { key: SortOption; label: string }[] = [
+  { key: "default",        label: "ค่าเริ่มต้น" },
+  { key: "name-asc",       label: "A → Z" },
+  { key: "difficulty-asc", label: "ง่าย → ยาก" },
+  { key: "difficulty-desc",label: "ยาก → ง่าย" },
+  { key: "detail-first",   label: "มี Detail ก่อน" },
+];
+
+function sortMovements(list: MovementCatalogEntry[], sort: SortOption): MovementCatalogEntry[] {
+  const copy = [...list];
+  if (sort === "name-asc")        return copy.sort((a, b) => a.name.localeCompare(b.name));
+  if (sort === "difficulty-asc")  return copy.sort((a, b) => a.difficulty - b.difficulty);
+  if (sort === "difficulty-desc") return copy.sort((a, b) => b.difficulty - a.difficulty);
+  if (sort === "detail-first")    return copy.sort((a, b) => {
+    const aD = "shortDesc" in a && !!(a as {shortDesc?:string}).shortDesc ? 1 : 0;
+    const bD = "shortDesc" in b && !!(b as {shortDesc?:string}).shortDesc ? 1 : 0;
+    return bD - aD;
+  });
+  return copy;
+}
 
 // ── Mind Map Components ───────────────────────────────────────────────────────
 
@@ -297,10 +329,22 @@ export default function MovementsPage() {
   const [activeCategory, setActiveCategory] = useState<"all" | MovementCategory>("all");
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "mindmap">("list");
+  const [filterEquipment, setFilterEquipment] = useState<string>("all");
+  const [filterDifficulty, setFilterDifficulty] = useState<DifficultyLevel | "all">("all");
+  const [filterDetailOnly, setFilterDetailOnly] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption>("default");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const activeFilterCount = [
+    filterEquipment !== "all",
+    filterDifficulty !== "all",
+    filterDetailOnly,
+    sortBy !== "default",
+  ].filter(Boolean).length;
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return ALL_MOVEMENTS.filter(m => {
+    const base = ALL_MOVEMENTS.filter(m => {
       const matchCat = activeCategory === "all" || m.category === activeCategory;
       const matchSearch =
         !q ||
@@ -309,9 +353,16 @@ export default function MovementsPage() {
         m.group.toLowerCase().includes(q) ||
         m.subgroup.toLowerCase().includes(q) ||
         m.equipment.some(e => e.toLowerCase().includes(q));
-      return matchCat && matchSearch;
+      const matchEquip =
+        filterEquipment === "all" ||
+        (filterEquipment === "none" ? m.equipment.length === 0 : m.equipment.includes(filterEquipment));
+      const matchDiff = filterDifficulty === "all" || m.difficulty === filterDifficulty;
+      const matchDetail = !filterDetailOnly ||
+        ("shortDesc" in m && !!(m as {shortDesc?:string}).shortDesc);
+      return matchCat && matchSearch && matchEquip && matchDiff && matchDetail;
     });
-  }, [activeCategory, search]);
+    return sortMovements(base, sortBy);
+  }, [activeCategory, search, filterEquipment, filterDifficulty, filterDetailOnly, sortBy]);
 
   // Group: category → subcategory → movements
   const grouped = useMemo(() => {
@@ -350,6 +401,16 @@ export default function MovementsPage() {
               <p className="text-white/40 text-sm mt-1.5 max-w-lg leading-relaxed">
                 คู่มือท่วงท่า CrossFit ครบทุก category — รวม coaching cues, progressions และ common faults
               </p>
+              <div className="mt-4">
+                <Link
+                  href="/movements/start-here"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black transition-all hover:opacity-90"
+                  style={{ backgroundColor: ACCENT, color: "#111" }}
+                >
+                  <Zap className="w-3.5 h-3.5" />
+                  ไม่รู้จะเริ่มที่ไหน? Start Here →
+                </Link>
+              </div>
             </div>
             <div className="flex gap-5">
               {[
@@ -408,11 +469,30 @@ export default function MovementsPage() {
             />
           </div>
 
-          {search && (
+          {(search || activeFilterCount > 0) && (
             <p className="text-xs text-gray-500">
               พบ <strong>{filtered.length}</strong> ท่า
             </p>
           )}
+
+          {/* Filter toggle */}
+          <button
+            onClick={() => setFiltersOpen(v => !v)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all border"
+            style={{
+              backgroundColor: filtersOpen || activeFilterCount > 0 ? ACCENT : "#f3f4f6",
+              color: filtersOpen || activeFilterCount > 0 ? "#111" : "#6b7280",
+              borderColor: filtersOpen || activeFilterCount > 0 ? ACCENT : "#e5e7eb",
+            }}
+          >
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">ตัวกรอง</span>
+            {activeFilterCount > 0 && (
+              <span className="w-4 h-4 rounded-full bg-[#111] text-white text-[9px] font-black flex items-center justify-center">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
 
           {/* View toggle */}
           <div className="ml-auto flex items-center gap-1 bg-gray-100 rounded-lg p-1">
@@ -442,6 +522,106 @@ export default function MovementsPage() {
             </button>
           </div>
         </div>
+
+        {/* ── Filter Panel ─────────────────────────────────────────── */}
+        {filtersOpen && (
+          <div className="border-t border-gray-100 px-4 sm:px-6 py-4 space-y-4 bg-gray-50">
+
+            {/* Sort */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 w-16 shrink-0 flex items-center gap-1">
+                <ArrowUpDown className="w-3 h-3" /> เรียง
+              </span>
+              <div className="flex gap-1.5 flex-wrap">
+                {SORT_OPTIONS.map(opt => (
+                  <button
+                    key={opt.key}
+                    onClick={() => setSortBy(opt.key)}
+                    className="px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all"
+                    style={{
+                      backgroundColor: sortBy === opt.key ? "#111" : "white",
+                      color: sortBy === opt.key ? ACCENT : "#6b7280",
+                      borderColor: sortBy === opt.key ? "#111" : "#e5e7eb",
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Difficulty */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 w-16 shrink-0">ระดับ</span>
+              <div className="flex gap-1.5 flex-wrap">
+                {(["all", 1, 2, 3, 4, 5] as ("all" | DifficultyLevel)[]).map(lv => (
+                  <button
+                    key={lv}
+                    onClick={() => setFilterDifficulty(lv)}
+                    className="px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all"
+                    style={{
+                      backgroundColor: filterDifficulty === lv ? "#111" : "white",
+                      color: filterDifficulty === lv ? ACCENT : "#6b7280",
+                      borderColor: filterDifficulty === lv ? "#111" : "#e5e7eb",
+                    }}
+                  >
+                    {lv === "all" ? "ทั้งหมด" : DIFFICULTY_LABEL[lv]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Equipment */}
+            <div className="flex items-start gap-3 flex-wrap">
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 w-16 shrink-0 mt-1">อุปกรณ์</span>
+              <div className="flex gap-1.5 flex-wrap">
+                {(["all", "none", ...ALL_EQUIPMENT.slice(0, 12)]).map(eq => (
+                  <button
+                    key={eq}
+                    onClick={() => setFilterEquipment(eq)}
+                    className="px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all capitalize"
+                    style={{
+                      backgroundColor: filterEquipment === eq ? "#111" : "white",
+                      color: filterEquipment === eq ? ACCENT : "#6b7280",
+                      borderColor: filterEquipment === eq ? "#111" : "#e5e7eb",
+                    }}
+                  >
+                    {eq === "all" ? "ทั้งหมด" : eq === "none" ? "ไม่ต้องอุปกรณ์" : eq}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Has Detail toggle + Reset */}
+            <div className="flex items-center justify-between gap-3 flex-wrap pt-1 border-t border-gray-200">
+              <button
+                onClick={() => setFilterDetailOnly(v => !v)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-bold border transition-all"
+                style={{
+                  backgroundColor: filterDetailOnly ? "#111" : "white",
+                  color: filterDetailOnly ? ACCENT : "#6b7280",
+                  borderColor: filterDetailOnly ? "#111" : "#e5e7eb",
+                }}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                แสดงเฉพาะท่าที่มี Coaching Detail
+              </button>
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={() => {
+                    setFilterEquipment("all");
+                    setFilterDifficulty("all");
+                    setFilterDetailOnly(false);
+                    setSortBy("default");
+                  }}
+                  className="flex items-center gap-1.5 text-[11px] font-bold text-red-400 hover:text-red-600 transition-colors"
+                >
+                  <X className="w-3 h-3" /> รีเซ็ตตัวกรอง
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── Main Content ──────────────────────────────────────────────── */}

@@ -12,6 +12,7 @@ import {
   type Movement,
   type DifficultyLevel,
 } from "@/lib/data/movements";
+import { getWorkoutsContainingMovement } from "@/lib/data/workouts";
 
 const ACCENT = "#9BEC00";
 
@@ -92,6 +93,7 @@ export default async function MovementDetailPage({
   const detail = getMovementDetail(slug); // full Movement or undefined (stub)
   const catColor = CATEGORY_COLOR[entry.category];
   const m = detail as Movement | undefined;
+  const appearsInWorkouts = getWorkoutsContainingMovement(slug);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f5f6f8" }}>
@@ -211,6 +213,27 @@ export default async function MovementDetailPage({
                 </div>
               )}
             </div>
+            {/* Appears in Open Workouts (stub page) */}
+            {appearsInWorkouts.length > 0 && (
+              <div className="bg-white rounded-xl border border-gray-200 p-4 text-left mb-6">
+                <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-3">ปรากฏใน Open Workout</p>
+                <div className="space-y-2">
+                  {appearsInWorkouts.map(w => (
+                    <Link
+                      key={w.id}
+                      href="/workouts"
+                      className="group flex items-center justify-between gap-3 px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300 transition-all"
+                    >
+                      <div>
+                        <p className="text-xs font-bold text-gray-700">CrossFit Open {w.name}</p>
+                        <p className="text-[9px] text-gray-400">{w.type} · {w.timeCapMinutes}นาที</p>
+                      </div>
+                      <ChevronRight className="w-3.5 h-3.5 text-gray-300 shrink-0" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
             <Link
               href="/movements"
               className="text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors"
@@ -437,6 +460,38 @@ export default async function MovementDetailPage({
                       <span key={tag} className="text-[10px] px-2 py-0.5 bg-gray-100 text-gray-500 rounded-md font-medium">
                         {tag}
                       </span>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Appears in Open Workouts */}
+              {appearsInWorkouts.length > 0 && (
+                <section className="bg-white rounded-xl border border-gray-200 p-5">
+                  <SectionHeader label="ปรากฏใน Open Workout" />
+                  <div className="space-y-2 mt-3">
+                    {appearsInWorkouts.map(w => (
+                      <Link
+                        key={w.id}
+                        href="/workouts"
+                        className="group flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border border-gray-200 bg-gray-50 hover:bg-white hover:border-gray-300 hover:shadow-sm transition-all"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className="w-7 h-7 rounded-md flex items-center justify-center text-[10px] font-black shrink-0"
+                            style={{ backgroundColor: `${ACCENT}20`, color: ACCENT }}
+                          >
+                            {w.name}
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-gray-700 group-hover:text-gray-900 transition-colors">
+                              CrossFit Open {w.name}
+                            </p>
+                            <p className="text-[9px] text-gray-400">{w.type} · {w.timeCapMinutes}นาที</p>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-gray-500 transition-colors shrink-0" />
+                      </Link>
                     ))}
                   </div>
                 </section>

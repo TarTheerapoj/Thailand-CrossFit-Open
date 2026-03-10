@@ -10,6 +10,7 @@ export interface Workout {
   type: "AMRAP" | "For Time" | "Max Weight";
   timeCapMinutes: number;
   movements: string[];
+  movementSlugs?: string[];  // slugs linking to /movements/[slug]
   divisions: WorkoutDivision[];
   image?: string;
   notes?: string[];
@@ -47,6 +48,7 @@ export const WORKOUTS: Workout[] = [
     type: "For Time",
     timeCapMinutes: 12,
     movements: ["Wall-Ball Shots", "Box Jump-Overs", "Medicine-Ball Box Step-Overs"],
+    movementSlugs: ["wall-ball", "box-jump-over", "box-jump-over"],
     image: "/workouts/26-1.jpg",
     notes: [
       "Only one medicine ball may be used during the workout.",
@@ -98,6 +100,7 @@ export const WORKOUTS: Workout[] = [
     type: "For Time",
     timeCapMinutes: 15,
     movements: ["Dumbbell Overhead Walking Lunge", "Alternating Dumbbell Snatches", "Pull-Ups", "Chest-to-Bar Pull-Ups", "Ring Muscle-Ups"],
+    movementSlugs: ["db-walking-lunge", "db-snatch", "kipping-pull-up", "chest-to-bar", "kipping-muscle-up"],
     image: "/workouts/26-2.jpg",
     notes: [
       "The dumbbell must remain at least 5 feet away from the pull-up bar and rings.",
@@ -164,6 +167,11 @@ export const WORKOUTS: Workout[] = [
     comingSoon: true,
   },
 ];
+
+/** Returns all workouts that contain the given movement slug */
+export function getWorkoutsContainingMovement(slug: string): Workout[] {
+  return WORKOUTS.filter(w => w.movementSlugs?.includes(slug));
+}
 
 export const SUMMARY_STATS = {
   totalAthletes: 604,
