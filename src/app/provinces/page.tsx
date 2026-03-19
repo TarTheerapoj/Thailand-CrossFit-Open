@@ -87,34 +87,52 @@ export default function ProvincesPage() {
             <ProvinceChart data={PROVINCE_STATS} />
           </div>
 
-          {/* Province ranking */}
+          {/* Top 5 Gym */}
           <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-4">จังหวัดที่มีนักกีฬามากที่สุด</p>
-            <div className="space-y-2.5">
-              {PROVINCE_STATS.map((p, i) => {
-                const pct = Math.round((p.athletes / totalAthletes) * 100);
-                const color = REGION_COLOR[p.region] ?? ACCENT;
-                return (
-                  <div key={p.province} className="flex items-center gap-3">
-                    <span className="w-5 text-center text-[10px] text-gray-400 font-bold shrink-0">{i + 1}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-1.5">
-                          <MapPin className="w-3 h-3 shrink-0" style={{ color }} />
-                          <span className="text-sm font-bold text-gray-800">{p.province}</span>
-                          <span className="text-[9px] text-gray-400 font-medium">{p.region}</span>
+            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Top Gym</p>
+            <p className="text-xs text-gray-500 mb-4">Open 2026 · เรียงตามจำนวนนักกีฬา</p>
+            {(() => {
+              const top5 = [...AFFILIATES]
+                .filter(a => a.athletes > 0)
+                .sort((a, b) => b.athletes - a.athletes)
+                .slice(0, 5);
+              const maxAthletes = top5[0]?.athletes ?? 1;
+              return (
+                <div className="space-y-3">
+                  {top5.map((gym, i) => {
+                    const color = REGION_COLOR[gym.region] ?? ACCENT;
+                    const pct = Math.round((gym.athletes / maxAthletes) * 100);
+                    const medals = ["🥇", "🥈", "🥉", "4", "5"];
+                    return (
+                      <div key={gym.name} className="flex items-center gap-3">
+                        <span className="w-6 text-center text-sm shrink-0 font-black"
+                          style={{ color: i < 3 ? undefined : "#9ca3af" }}>
+                          {medals[i]}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="min-w-0">
+                              <p className="text-sm font-bold text-gray-800 truncate">{gym.name}</p>
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <MapPin className="w-2.5 h-2.5 shrink-0" style={{ color }} />
+                                <span className="text-[10px] text-gray-400">{gym.province}</span>
+                              </div>
+                            </div>
+                            <span className="text-sm font-black ml-3 shrink-0" style={{ color }}>
+                              {gym.athletes}
+                              <span className="text-[10px] font-medium text-gray-400 ml-0.5">คน</span>
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-100 rounded-full h-1.5">
+                            <div className="h-1.5 rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
+                          </div>
                         </div>
-                        <span className="text-xs font-bold text-gray-700">{p.athletes.toLocaleString()} คน</span>
                       </div>
-                      <div className="w-full bg-gray-100 rounded-full h-1.5">
-                        <div className="h-1.5 rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
-                      </div>
-                    </div>
-                    <span className="text-[10px] text-gray-400 shrink-0 w-8 text-right">{p.affiliates} Box</span>
-                  </div>
-                );
-              })}
-            </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
         </div>
 

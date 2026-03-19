@@ -775,8 +775,11 @@ function ComingSoonWorkoutCard({ workout }: { workout: typeof WORKOUTS[0] }) {
 }
 
 export default function WorkoutsPage() {
+  const [activeId, setActiveId] = useState<string>(WORKOUTS[0].id);
+  const activeWorkout = WORKOUTS.find(w => w.id === activeId) ?? WORKOUTS[0];
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-0">
       {/* Dark hero header */}
       <section className="bg-[#111] text-white relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-0.5" style={{ backgroundColor: "#9BEC00" }} />
@@ -807,18 +810,43 @@ export default function WorkoutsPage() {
             </Link>
           </div>
         </div>
+
+        {/* Workout tab selector — embedded in hero */}
+        <div className="border-t border-white/10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-stretch">
+            <div className="flex items-center pr-6 border-r border-white/10 mr-2">
+              <span className="text-sm font-black tracking-[0.2em] uppercase text-white/70">WORKOUT</span>
+            </div>
+            {WORKOUTS.map((w, i) => {
+              const isActive = w.id === activeId;
+              return (
+                <button
+                  key={w.id}
+                  onClick={() => setActiveId(w.id)}
+                  className="relative px-6 py-4 text-lg font-black tracking-tight transition-all"
+                  style={{
+                    color: isActive ? "#111" : "rgba(255,255,255,0.4)",
+                    backgroundColor: isActive ? "#9BEC00" : "transparent",
+                  }}
+                >
+                  {i + 1}
+                  {w.comingSoon && (
+                    <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-white/20" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-8">
-        <div className="space-y-10">
-          {WORKOUTS.map((workout) =>
-            workout.comingSoon ? (
-              <ComingSoonWorkoutCard key={workout.id} workout={workout} />
-            ) : (
-              <WorkoutCard key={workout.id} workout={workout} />
-            )
-          )}
-        </div>
+      {/* Single workout display */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        {activeWorkout.comingSoon ? (
+          <ComingSoonWorkoutCard workout={activeWorkout} />
+        ) : (
+          <WorkoutCard workout={activeWorkout} />
+        )}
       </div>
     </div>
   );

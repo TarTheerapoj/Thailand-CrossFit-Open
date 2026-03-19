@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, BarChart3, Dumbbell, MapPin, ChevronRight, Clock, BookOpen, Sparkles } from "lucide-react";
-import { SUMMARY_STATS, WORKOUTS } from "@/lib/data/workouts";
-import { RecommendationResultCard, RecommendationSupportPanel } from "@/components/V3Widgets";
+import { ArrowRight, BarChart3, Dumbbell, MapPin, ChevronRight, Clock, BookOpen } from "lucide-react";
+import { SUMMARY_STATS } from "@/lib/data/workouts";
 
 const latest = SUMMARY_STATS.participationByYear[SUMMARY_STATS.participationByYear.length - 1];
 
@@ -175,118 +174,37 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* ─── NEW TODAY SPOTLIGHT ─────────────────────────────────── */}
-      <section className="bg-[#f4f4f4] border-b border-[#e0e0e0]">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 py-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full font-black text-[10px] tracking-widest uppercase" style={{ backgroundColor: "#9BEC00", color: "#111" }}>
-              <Sparkles className="w-3 h-3" />
-              อัพเดทวันนี้
-            </div>
-            <div className="h-px flex-1 bg-[#ddd]" />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Link href="/movements" className="group flex items-center gap-4 bg-white border border-[#e8e8e8] hover:border-primary hover:shadow-sm transition-all px-5 py-4 rounded-xl">
-              <div className="w-11 h-11 shrink-0 flex items-center justify-center rounded-lg" style={{ backgroundColor: "#111" }}>
-                <BookOpen className="w-5 h-5" style={{ color: "#9BEC00" }} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <p className="text-sm font-black text-[#111]">คลังท่า</p>
-                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded" style={{ backgroundColor: "#9BEC00", color: "#111" }}>NEW</span>
-                </div>
-                <p className="text-xs text-[#888] truncate">35 ท่าพร้อมรายละเอียด · วิดีโอพรีวิว · 127 ท่าทั้งหมด</p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-[#ccc] group-hover:text-primary shrink-0 transition-colors" />
-            </Link>
-            <Link href="/provinces" className="group flex items-center gap-4 bg-white border border-[#e8e8e8] hover:border-[#3b82f6] hover:shadow-sm transition-all px-5 py-4 rounded-xl">
-              <div className="w-11 h-11 shrink-0 flex items-center justify-center rounded-lg" style={{ backgroundColor: "#3b82f6" }}>
-                <MapPin className="w-5 h-5 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <p className="text-sm font-black text-[#111]">Provinces & Affiliates</p>
-                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded" style={{ backgroundColor: "#3b82f6", color: "#fff" }}>NEW</span>
-                </div>
-                <p className="text-xs text-[#888] truncate">24 Box · 7 จังหวัด · 4 ภาค · ค้นหา CrossFit ใกล้คุณ</p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-[#ccc] group-hover:text-[#3b82f6] shrink-0 transition-colors" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── NEWS-STYLE CARDS ───────────────────────────────────── */}
+      {/* ─── FEATURE GRID ───────────────────────────── */}
       <section className="bg-[#f4f4f4] text-[#111]">
-        <div className="max-w-7xl mx-auto">
-          {NEWS_CARDS.map(({ tag, title, sub, href, accent, comingSoon, isNew, iconBg, iconColor, iconLabel }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`group flex items-center gap-6 px-6 sm:px-10 py-7 border-b border-[#ddd] transition-colors ${comingSoon ? "opacity-50 pointer-events-none" : "hover:bg-white"}`}
-            >
-              <div className="hidden sm:flex w-16 h-16 shrink-0 items-center justify-center font-black text-xs" style={{ backgroundColor: iconBg, color: iconColor }}>
-                {comingSoon ? <Clock className="w-5 h-5" /> : href === "/workouts" ? <Dumbbell className="w-6 h-6" /> : href === "/movements" ? <BookOpen className="w-6 h-6" /> : href === "/provinces" ? <MapPin className="w-6 h-6" /> : iconLabel}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="text-[10px] font-black tracking-[0.25em] uppercase" style={{ color: accent && !comingSoon ? "#9BEC00" : "#999" }}>{tag}</p>
-                  {isNew && <span className="text-[8px] font-black px-1.5 py-0.5 rounded" style={{ backgroundColor: "#9BEC00", color: "#111" }}>NEW</span>}
-                </div>
-                <p className="text-base sm:text-lg font-black leading-tight text-[#111] truncate">{title}</p>
-                {comingSoon
-                  ? <p className="text-xs font-black tracking-widest uppercase mt-1" style={{ color: "#9BEC00", opacity: 0.7 }}>Coming Soon · รอ Update</p>
-                  : <p className="text-xs text-[#888] font-bold tracking-widest uppercase mt-1">{sub}</p>
-                }
-              </div>
-              {!comingSoon && <ChevronRight className="w-5 h-5 text-[#bbb] group-hover:text-primary transition-colors shrink-0" />}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-[#f9f9f9] border-t border-[#eee] text-[#111]">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 py-10 space-y-5">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-              <p className="text-[10px] font-black tracking-[0.25em] uppercase" style={{ color: "#9BEC00" }}>Movement V3</p>
-              <p className="text-sm text-[#666] mt-1">ระบบช่วยเลือกจุดเริ่มต้นและเช็กความพร้อม ที่เริ่มใช้งานได้ทันทีแบบไม่ต้องตั้งค่าอะไรเพิ่ม</p>
-            </div>
-            <Link href="/recommend" className="text-xs font-bold text-[#888] hover:text-primary transition-colors">เปิดหน้าจุดเริ่มต้น →</Link>
-          </div>
-          <div className="grid grid-cols-1 xl:grid-cols-[1.05fr_0.95fr] gap-6">
-            <RecommendationResultCard title="คำแนะนำล่าสุดของคุณ" />
-            <RecommendationSupportPanel />
-          </div>
-        </div>
-      </section>
-
-      {/* ─── WORKOUT LIST ──────────────────────────────────────── */}
-      <section className="bg-[#f9f9f9] border-t border-[#eee] text-[#111]">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 py-10">
-          <div className="flex items-center justify-between mb-5">
-            <p className="text-[10px] font-black tracking-[0.25em] uppercase" style={{ color: "#9BEC00" }}>CrossFit Open 2026 · Workouts</p>
-            <Link href="/workouts" className="text-xs font-bold text-[#888] hover:text-primary transition-colors">ดูทั้งหมด →</Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {WORKOUTS.map(w => (
-              <Link key={w.id} href="/workouts"
-                className="group bg-white rounded-xl border border-[#e8e8e8] p-4 hover:border-primary hover:shadow-sm transition-all flex items-center gap-4">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 font-black text-xs"
-                  style={{ backgroundColor: w.comingSoon ? "#f0f0f0" : "#9BEC00", color: w.comingSoon ? "#bbb" : "#111" }}>
-                  {w.comingSoon ? <Clock className="w-4 h-4" /> : w.name}
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 py-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {NEWS_CARDS.map(({ tag, title, sub, href, comingSoon, isNew, iconBg, iconColor }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`group flex items-center gap-4 bg-white border border-[#e8e8e8] px-5 py-5 rounded-xl transition-all ${
+                  comingSoon ? "opacity-50 pointer-events-none" : "hover:border-primary hover:shadow-sm"
+                }`}
+              >
+                <div className="w-12 h-12 shrink-0 flex items-center justify-center rounded-lg font-black text-xs" style={{ backgroundColor: iconBg, color: iconColor }}>
+                  {comingSoon ? <Clock className="w-5 h-5" /> :
+                   href === "/workouts"  ? <Dumbbell className="w-5 h-5" /> :
+                   href === "/movements" ? <BookOpen className="w-5 h-5" /> :
+                   href === "/provinces" ? <MapPin className="w-5 h-5" /> :
+                   href === "/dashboard" ? <BarChart3 className="w-5 h-5" /> :
+                   <span>{tag.slice(0, 2)}</span>}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-black text-sm text-[#111]">{w.name}</p>
-                  {w.comingSoon ? (
-                    <p className="text-xs text-[#bbb]">รอประกาศ</p>
-                  ) : (
-                    <p className="text-xs text-[#888] truncate">{w.movements.slice(0, 2).join(" · ")}</p>
-                  )}
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-[10px] font-black tracking-[0.2em] uppercase text-[#999]">{tag}</p>
+                    {isNew && <span className="text-[8px] font-black px-1.5 py-0.5 rounded" style={{ backgroundColor: "#9BEC00", color: "#111" }}>NEW</span>}
+                  </div>
+                  <p className="text-sm font-black text-[#111] leading-tight">{title}</p>
+                  {comingSoon
+                    ? <p className="text-[10px] font-bold text-[#bbb] mt-0.5 uppercase tracking-widest">Coming Soon</p>
+                    : <p className="text-[11px] text-[#888] mt-0.5 truncate">{sub}</p>}
                 </div>
-                {!w.comingSoon && (
-                  <ChevronRight className="w-4 h-4 text-[#ccc] group-hover:text-primary transition-colors shrink-0" />
-                )}
+                {!comingSoon && <ChevronRight className="w-4 h-4 text-[#ccc] group-hover:text-primary shrink-0 transition-colors" />}
               </Link>
             ))}
           </div>
