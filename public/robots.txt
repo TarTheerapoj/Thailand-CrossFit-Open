@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://three-pearl-56.vercel.app/sitemap.xml

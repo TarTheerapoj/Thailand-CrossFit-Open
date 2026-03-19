@@ -12,7 +12,26 @@ const sarabun = Sarabun({
 
 export const metadata: Metadata = {
   title: "ลุยดิวะ | CrossFit Open Thailand 2026",
-  description: "วิเคราะห์ผลการแข่งขัน CrossFit Open Thailand 2026 แบบลึกๆ",
+  description: "วิเคราะห์ผลการแข่งขัน CrossFit Open Thailand 2026 — สถิติ · Rankings · Percentiles · Affiliates 604 นักกีฬา 24 Boxes 7 จังหวัด",
+  keywords: ["CrossFit", "CrossFit Open 2026", "Thailand", "CrossFit Thailand", "ลุยดิวะ", "สถิติ CrossFit", "26.1", "26.2", "26.3"],
+  authors: [{ name: "ลุยดิวะ" }],
+  openGraph: {
+    title: "ลุยดิวะ | CrossFit Open Thailand 2026",
+    description: "วิเคราะห์ผลการแข่งขัน CrossFit Open Thailand 2026 — 604 นักกีฬา · 24 Affiliates · 7 จังหวัด",
+    url: "https://three-pearl-56.vercel.app",
+    siteName: "ลุยดิวะ",
+    locale: "th_TH",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "ลุยดิวะ | CrossFit Open Thailand 2026",
+    description: "วิเคราะห์ผลการแข่งขัน CrossFit Open Thailand 2026 — 604 นักกีฬา · 24 Affiliates",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
