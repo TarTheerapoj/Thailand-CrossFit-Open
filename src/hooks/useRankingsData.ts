@@ -17,15 +17,26 @@ export interface RankingEntry26_2 {
   "Score Women": string;
 }
 
-export function useRankingsData(workoutId: "26.1" | "26.2") {
-  const [data, setData] = useState<(RankingEntry | RankingEntry26_2)[]>([]);
+export interface RankingEntry26_3 {
+  "Rank": string;
+  "Division Men": string;
+  "Score Men": string;
+  "Score Women": string;
+  "Division Women": string;
+}
+
+export function useRankingsData(workoutId: "26.1" | "26.2" | "26.3") {
+  const [data, setData] = useState<(RankingEntry | RankingEntry26_2 | RankingEntry26_3)[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const filename = workoutId === "26.1" ? "thailand-26-1-rankings.csv" : "26.2 - Sheet1.csv";
+        const filename =
+          workoutId === "26.1" ? "thailand-26-1-rankings.csv" :
+          workoutId === "26.2" ? "26.2 - Sheet1.csv" :
+          "26.3 - Sheet1.csv";
         const response = await fetch(`/data/${filename}`);
         if (!response.ok) throw new Error("Failed to load CSV");
         
@@ -40,7 +51,15 @@ export function useRankingsData(workoutId: "26.1" | "26.2") {
         const headers = lines[0].split(',').map(h => h.trim());
         const parsed = lines.slice(1).map(line => {
           const values = line.split(',').map(v => v.trim());
-          if (workoutId === "26.1") {
+          if (workoutId === "26.3") {
+            return {
+              "Rank":           values[headers.indexOf("Rank")]            || "",
+              "Division Men":   values[headers.indexOf("Division Men")]    || "",
+              "Score Men":      values[headers.indexOf("Score  Men")]      || values[headers.indexOf("Score Men")] || "",
+              "Score Women":    values[headers.indexOf("Score Women")]     || "",
+              "Division Women": values[headers.indexOf("Divsion women")]   || values[headers.indexOf("Division Women")] || "",
+            } as RankingEntry26_3;
+          } else if (workoutId === "26.1") {
             return {
               "TH Rank":       values[headers.indexOf("TH Rank")]       || "",
               "Reps Men":      values[headers.indexOf("Reps Men")]      || "",

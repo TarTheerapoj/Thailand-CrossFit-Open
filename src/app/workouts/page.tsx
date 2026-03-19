@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, ImageIcon, ExternalLink, GitBranch } from "lucide-react";
 import { WORKOUTS, type WorkoutDivision } from "@/lib/data/workouts";
-import { useRankingsData, type RankingEntry, type RankingEntry26_2 } from "@/hooks/useRankingsData";
+import { useRankingsData, type RankingEntry, type RankingEntry26_2, type RankingEntry26_3 } from "@/hooks/useRankingsData";
 import { cn } from "@/lib/utils";
 import { getPathwayBySlug } from "@/lib/pathways";
 import { MovementSlugLinks } from "@/components/movements/LearningUI";
@@ -124,6 +124,84 @@ function ScoreDistributionChart({
   );
 }
 
+const PERCENTILE_MARKS = [99, 95, 90, 80, 75, 60, 50, 40, 25, 20] as const;
+type PercentileMark = typeof PERCENTILE_MARKS[number];
+
+function computePercentiles(arr: number[]): Record<PercentileMark, number> {
+  const sorted = [...arr].sort((a, b) => a - b);
+  const n = sorted.length;
+  const result = {} as Record<PercentileMark, number>;
+  for (const p of PERCENTILE_MARKS) {
+    if (!n) { result[p] = 0; continue; }
+    const idx = Math.max(0, Math.ceil((p / 100) * n) - 1);
+    result[p] = sorted[idx];
+  }
+  return result;
+}
+
+function PercentileTable({
+  menArr,
+  womenArr,
+  unit,
+  formatVal,
+}: {
+  menArr: number[];
+  womenArr: number[];
+  unit: string;
+  formatVal?: (v: number) => string;
+}) {
+  const men = computePercentiles(menArr);
+  const women = computePercentiles(womenArr);
+  const fmt = formatVal ?? ((v: number) => String(v));
+  const showMen   = menArr.length   > 0;
+  const showWomen = womenArr.length > 0;
+  if (!showMen && !showWomen) return null;
+
+  return (
+    <div className="rounded-xl border border-border/50 overflow-hidden">
+      <div className="px-4 py-2.5 bg-secondary/50 border-b border-border/40 flex items-center justify-between gap-3">
+        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">เปอร์เซ็นไทล์ · Rx</p>
+        <p className="text-[9px] text-muted-foreground/60">{unit}</p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="border-b border-border/30 bg-secondary/20">
+              <th className="px-4 py-2 text-left text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest w-16">%ile</th>
+              {showMen   && <th className="px-4 py-2 text-right text-[10px] font-black uppercase tracking-widest" style={{ color: "#3b82f6" }}>ชาย ♂</th>}
+              {showWomen && <th className="px-4 py-2 text-right text-[10px] font-black uppercase tracking-widest" style={{ color: "#f472b6" }}>หญิง ♀</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {PERCENTILE_MARKS.map((p, i) => (
+              <tr
+                key={p}
+                className={cn(
+                  "border-b border-border/20 last:border-0 transition-colors hover:bg-secondary/30",
+                  p === 50 ? "bg-[#9BEC00]/5" : i % 2 === 0 ? "bg-transparent" : "bg-secondary/10"
+                )}
+              >
+                <td className="px-4 py-2.5 font-black text-muted-foreground/70">
+                  {p === 50 ? <span style={{ color: "#9BEC00" }}>{p}th</span> : `${p}th`}
+                </td>
+                {showMen   && <td className="px-4 py-2.5 text-right font-bold text-foreground">{fmt(men[p])}</td>}
+                {showWomen && <td className="px-4 py-2.5 text-right font-bold text-foreground">{fmt(women[p])}</td>}
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="border-t border-border/30 bg-secondary/20">
+              <td className="px-4 py-2 text-[9px] text-muted-foreground/40" colSpan={3}>
+                n = {showMen ? `ชาย ${menArr.length}` : ""}{showMen && showWomen ? " · " : ""}{showWomen ? `หญิง ${womenArr.length}` : ""}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 function RxStatsBar({ label, value, color, sub }: { label: string; value: string; color: string; sub?: string }) {
   return (
     <div className="rounded-xl border border-border/50 p-4 space-y-1">
@@ -148,7 +226,7 @@ function parseScore262(score: string): { type: "finished" | "timed_out" | "none"
 
 function WorkoutStats({ workout }: { workout: typeof WORKOUTS[0] }) {
   const [gender, setGender] = useState<GenderFilter>("all");
-  const { data: raw, loading } = useRankingsData(workout.id as "26.1" | "26.2");
+  const { data: raw, loading } = useRankingsData(workout.id as "26.1" | "26.2" | "26.3");
 
   // ── 26.1 stats (reps) ──────────────────────────────────────────────
   const stats261 = useMemo(() => {
@@ -172,7 +250,23 @@ function WorkoutStats({ workout }: { workout: typeof WORKOUTS[0] }) {
     };
   }, [raw, workout.id]);
 
-  // ── 26.2 stats (time + reps separated) ────────────────────────────
+  // ── 26.3 stats (reps only, no time) ──────────────────────────
+  const stats263 = useMemo(() => {
+    if (workout.id !== "26.3") return null;
+    const isValid = (v: string) => v && v !== "0" && v !== "no score" && v !== "Null" && !isNaN(Number(v));
+    const rows = raw as RankingEntry26_3[];
+    const menReps   = rows.filter(r => r["Division Men"]   === "RX" && isValid(r["Score Men"])).map(r => Number(r["Score Men"]));
+    const womenReps = rows.filter(r => r["Division Women"] === "RX" && isValid(r["Score Women"])).map(r => Number(r["Score Women"]));
+    const avg = (arr: number[]) => arr.length ? Math.round(arr.reduce((s, v) => s + v, 0) / arr.length) : 0;
+    return {
+      men:   { count: menReps.length,   avg: avg(menReps),   top: menReps.length   ? Math.max(...menReps)   : 0 },
+      women: { count: womenReps.length, avg: avg(womenReps), top: womenReps.length ? Math.max(...womenReps) : 0 },
+      menReps,
+      womenReps,
+    };
+  }, [raw, workout.id]);
+
+  // ── 26.2 stats (time + reps separated) ─────────────────────────
   const stats262 = useMemo(() => {
     if (workout.id !== "26.2") return null;
     const avg = (arr: number[]) =>
@@ -213,7 +307,7 @@ function WorkoutStats({ workout }: { workout: typeof WORKOUTS[0] }) {
     };
   }, [raw, workout.id]);
 
-  const hasData = workout.id === "26.1" || workout.id === "26.2";
+  const hasData = workout.id === "26.1" || workout.id === "26.2" || workout.id === "26.3";  
   const showMen   = gender !== "women";
   const showWomen = gender !== "men";
 
@@ -263,6 +357,11 @@ function WorkoutStats({ workout }: { workout: typeof WORKOUTS[0] }) {
               ชาย {stats262.men.totalRx} คน · หญิง {stats262.women.totalRx} คน
             </p>
           )}
+          {!loading && stats263 && (
+            <p className="text-[10px] text-muted-foreground mt-0.5">
+              ชาย {stats263.men.count} คน · หญิง {stats263.women.count} คน
+            </p>
+          )}
         </div>
         <div className="flex gap-1.5">
           {GENDER_FILTERS.map(f => (
@@ -296,15 +395,22 @@ function WorkoutStats({ workout }: { workout: typeof WORKOUTS[0] }) {
               <RxStatsBar label="สูงสุด หญิง"   value={`${stats261.women.top}`} color="#f472b6" sub="reps" />
             </>}
           </div>
-          <div className="rounded-xl border border-border/50 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">การกระจายคะแนน · Rx</p>
-              <div className="flex gap-3">
-                {showMen   && <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><span className="w-2.5 h-2.5 rounded-sm inline-block bg-blue-500" />ชาย</span>}
-                {showWomen && <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><span className="w-2.5 h-2.5 rounded-sm inline-block bg-pink-400" />หญิง</span>}
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto] gap-4 items-start">
+            <div className="rounded-xl border border-border/50 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">การกระจายคะแนน · Rx</p>
+                <div className="flex gap-3">
+                  {showMen   && <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><span className="w-2.5 h-2.5 rounded-sm inline-block bg-blue-500" />ชาย</span>}
+                  {showWomen && <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><span className="w-2.5 h-2.5 rounded-sm inline-block bg-pink-400" />หญิง</span>}
+                </div>
               </div>
+              <ScoreDistributionChart menReps={stats261.menReps} womenReps={stats261.womenReps} gender={gender} />
             </div>
-            <ScoreDistributionChart menReps={stats261.menReps} womenReps={stats261.womenReps} gender={gender} />
+            <PercentileTable
+              menArr={gender !== "women" ? stats261.menReps : []}
+              womenArr={gender !== "men" ? stats261.womenReps : []}
+              unit="reps"
+            />
           </div>
         </>
       ) : stats262 ? (
@@ -367,22 +473,65 @@ function WorkoutStats({ workout }: { workout: typeof WORKOUTS[0] }) {
             </div>
           )}
 
-          {/* Chart: reps distribution for timed-out athletes only */}
-          <div className="rounded-xl border border-border/50 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">การกระจาย reps · Rx (ไม่จบ)</p>
-                <p className="text-[9px] text-muted-foreground mt-0.5">เฉพาะนักกีฬาที่ไม่จบทัน Time Cap</p>
+          {/* Chart + percentiles: reps distribution for timed-out athletes */}
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto] gap-4 items-start">
+            <div className="rounded-xl border border-border/50 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">การกระจาย reps · Rx (ไม่จบ)</p>
+                  <p className="text-[9px] text-muted-foreground mt-0.5">เฉพาะนักกีฬาที่ไม่จบทัน Time Cap</p>
+                </div>
+                <div className="flex gap-3">
+                  {showMen   && <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><span className="w-2.5 h-2.5 rounded-sm inline-block bg-blue-500" />ชาย</span>}
+                  {showWomen && <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><span className="w-2.5 h-2.5 rounded-sm inline-block bg-pink-400" />หญิง</span>}
+                </div>
               </div>
-              <div className="flex gap-3">
-                {showMen   && <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><span className="w-2.5 h-2.5 rounded-sm inline-block bg-blue-500" />ชาย</span>}
-                {showWomen && <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><span className="w-2.5 h-2.5 rounded-sm inline-block bg-pink-400" />หญิง</span>}
-              </div>
+              <ScoreDistributionChart
+                menReps={showMen ? stats262.men.repsArr : []}
+                womenReps={showWomen ? stats262.women.repsArr : []}
+                gender={gender}
+              />
             </div>
-            <ScoreDistributionChart
-              menReps={showMen ? stats262.men.repsArr : []}
-              womenReps={showWomen ? stats262.women.repsArr : []}
-              gender={gender}
+            <PercentileTable
+              menArr={showMen ? stats262.men.repsArr : []}
+              womenArr={showWomen ? stats262.women.repsArr : []}
+              unit="reps (ไม่จบ)"
+            />
+          </div>
+        </>
+      ) : stats263 ? (
+        <>
+          {/* 26.3: reps stat cards */}
+          <div className={cn("grid gap-3", showMen && showWomen ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-2")}>
+            {showMen && <>
+              <RxStatsBar label="ค่าเฉลี่ย ชาย" value={`${stats263.men.avg}`}  color="#3b82f6" sub="reps" />
+              <RxStatsBar label="สูงสุด ชาย"    value={`${stats263.men.top}`}  color="#3b82f6" sub="reps" />
+            </>}
+            {showWomen && <>
+              <RxStatsBar label="ค่าเฉลี่ย หญิง" value={`${stats263.women.avg}`} color="#f472b6" sub="reps" />
+              <RxStatsBar label="สูงสุด หญิง"    value={`${stats263.women.top}`} color="#f472b6" sub="reps" />
+            </>}
+          </div>
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto] gap-4 items-start">
+            <div className="rounded-xl border border-border/50 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">การกระจายคะแนน · Rx</p>
+                <div className="flex gap-3">
+                  {showMen   && <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><span className="w-2.5 h-2.5 rounded-sm inline-block bg-blue-500" />ชาย</span>}
+                  {showWomen && <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><span className="w-2.5 h-2.5 rounded-sm inline-block bg-pink-400" />หญิง</span>}
+                </div>
+              </div>
+              <ScoreDistributionChart
+                menReps={showMen   ? stats263.menReps   : []}
+                womenReps={showWomen ? stats263.womenReps : []}
+                gender={gender}
+                workoutId="26.3"
+              />
+            </div>
+            <PercentileTable
+              menArr={showMen   ? stats263.menReps   : []}
+              womenArr={showWomen ? stats263.womenReps : []}
+              unit="reps"
             />
           </div>
         </>

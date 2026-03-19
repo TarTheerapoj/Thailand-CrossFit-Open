@@ -190,11 +190,44 @@ export const WORKOUTS: Workout[] = [
     id: "26.3",
     name: "26.3",
     type: "For Time",
-    timeCapMinutes: 0,
-    movements: [],
-    image: undefined,
-    notes: undefined,
-    divisions: [],
+    timeCapMinutes: 16,
+    movements: ["Burpees Over the Bar", "Cleans", "Thrusters"],
+    movementSlugs: ["bar-facing-burpee", "power-clean", "thruster"],
+    image: "/workouts/26-3.jpg",
+    notes: [
+      "Use only one barbell for the entire workout.",
+      "Athletes must change their own weights — no outside assistance allowed.",
+      "Place collars on the outside of the plates at all times.",
+      "Athletes may change weights only after completing their 2nd and 4th rounds of thrusters.",
+      "Time does not stop at any point during the workout.",
+      "Tiebreak: time after the LAST completed set of thrusters.",
+    ],
+    divisions: [
+      {
+        name: "Rx",
+        description: `For time:\n2 rounds of:\n  12 burpees over the bar\n  12 cleans (95/65 lb)\n  12 burpees over the bar\n  12 thrusters (95/65 lb)\n\n2 rounds of:\n  12 burpees over the bar\n  12 cleans (115/75 lb)\n  12 burpees over the bar\n  12 thrusters (115/75 lb)\n\n2 rounds of:\n  12 burpees over the bar\n  12 cleans (135/85 lb)\n  12 burpees over the bar\n  12 thrusters (135/85 lb)\n\nTime cap: 16 minutes`,
+        equipment: {
+          women: "Barbell 35 lb (15 kg) + plates · Weights: 65, 75, 85 lb (29, 34, 38 kg)",
+          men: "Barbell 45 lb (20 kg) + plates · Weights: 95, 115, 135 lb (43, 52, 61 kg)",
+        },
+      },
+      {
+        name: "Scaled",
+        description: `For time:\n2 rounds of:\n  12 burpees over the bar (may step over)\n  12 cleans (65/45 lb)\n  12 burpees over the bar (may step over)\n  12 thrusters (65/45 lb)\n\n2 rounds of:\n  12 burpees over the bar (may step over)\n  12 cleans (85/55 lb)\n  12 burpees over the bar (may step over)\n  12 thrusters (85/55 lb)\n\n2 rounds of:\n  12 burpees over the bar (may step over)\n  12 cleans (95/65 lb)\n  12 burpees over the bar (may step over)\n  12 thrusters (95/65 lb)\n\nTime cap: 16 minutes`,
+        equipment: {
+          women: "Barbell + plates · Weights: 45, 55, 65 lb (20, 25, 29 kg)",
+          men: "Barbell + plates · Weights: 65, 85, 95 lb (29, 38, 43 kg)",
+        },
+      },
+      {
+        name: "Foundations",
+        description: `For time:\n2 rounds of:\n  12 burpees over the bar (may step over)\n  12 cleans (light/moderate load)\n  12 burpees over the bar (may step over)\n  12 thrusters (light/moderate load)\n\n2 rounds of:\n  12 burpees over the bar (may step over)\n  12 cleans\n  12 burpees over the bar (may step over)\n  12 thrusters\n\n2 rounds of:\n  12 burpees over the bar (may step over)\n  12 cleans\n  12 burpees over the bar (may step over)\n  12 thrusters\n\nTime cap: 16 minutes\n\n*Loads are a suggested starting point. Decrease or increase as your skill level allows.`,
+        equipment: {
+          women: "Barbell + plates · ปรับน้ำหนักตามความสามารถ",
+          men: "Barbell + plates · ปรับน้ำหนักตามความสามารถ",
+        },
+      },
+    ],
     completionRateRx: 0,
     completionRateScaled: 0,
     avgScoreRx: "—",
@@ -202,7 +235,21 @@ export const WORKOUTS: Workout[] = [
     topScoreRx: "—",
     topScoreScaled: "—",
     scoreDistribution: [],
-    comingSoon: true,
+    readiness: {
+      keyDemands: [
+        "barbell cycling under fatigue",
+        "clean technique at increasing loads",
+        "thruster efficiency",
+        "pacing over 144 burpees",
+      ],
+      commonStickingPoints: [
+        "ออกเร็วเกินไปในรอบแรก ทำให้ Thruster ชุดหลังหนักมาก",
+        "เปลี่ยนน้ำหนักช้า ทำให้เสียเวลาสะสมมาก",
+        "Thruster น้ำหนักสูงสุดไม่ผ่าน เพราะขาหมดจาก Burpee",
+      ],
+      trainFirstMovementSlugs: ["bar-facing-burpee", "power-clean", "thruster", "front-squat"],
+      pathwaySlugs: ["barbell-path", "open-engine-path"],
+    },
   },
 ];
 
