@@ -1,0 +1,85 @@
+{
+  "summary": {
+    "site": "ลุยดิวะ - CrossFit Open Thailand 2026",
+    "url": "https://three-pearl-56.vercel.app",
+    "totalAthletes": 604,
+    "totalAffiliates": 24,
+    "totalProvinces": 7,
+    "year": 2026,
+    "divisions": [
+      {"name": "Men Rx", "count": 112},
+      {"name": "Women Rx", "count": 98},
+      {"name": "Men Scaled", "count": 68},
+      {"name": "Women Scaled", "count": 54},
+      {"name": "Men Masters 35-39", "count": 28},
+      {"name": "Women Masters 35-39", "count": 22},
+      {"name": "Men Masters 40-44", "count": 8},
+      {"name": "Women Masters 40-44", "count": 6}
+    ]
+  },
+  "workouts": [
+    {
+      "id": "26.1",
+      "name": "26.1",
+      "type": "For Time",
+      "timeCapMinutes": 12,
+      "movements": ["Wall-Ball Shots", "Box Jump-Overs", "Medicine-Ball Box Step-Overs"],
+      "rxWeights": {"women": "14-lb medicine ball, 9-ft target, 20-inch box", "men": "20-lb medicine ball, 10-ft target, 24-inch box"},
+      "stats": {"totalAthletes": 604, "menAvg": 210, "womenAvg": 195, "menTop": 245, "womenTop": 198}
+    },
+    {
+      "id": "26.2",
+      "name": "26.2",
+      "type": "For Time",
+      "timeCapMinutes": 15,
+      "movements": ["Deadlifts", "Handstand Push-Ups"],
+      "rxWeights": {"women": "185 lb", "men": "275 lb"},
+      "stats": {"finishedMen": 89, "finishedWomen": 76, "avgRepsTimedOut": {"men": 142, "women": 128}}
+    },
+    {
+      "id": "26.3",
+      "name": "26.3",
+      "type": "For Time",
+      "timeCapMinutes": 16,
+      "movements": ["Burpees Over the Bar", "Cleans", "Thrusters"],
+      "rxWeights": {
+        "women": ["65 lb", "75 lb", "85 lb"],
+        "men": ["95 lb", "115 lb", "135 lb"]
+      },
+      "stats": {"menAvg": 185, "womenAvg": 168, "menTop": 240, "womenTop": 258}
+    }
+  ],
+  "provinces": [
+    {"province": "กรุงเทพฯ", "region": "ภาคกลาง", "athletes": 331, "affiliates": 11},
+    {"province": "เชียงใหม่", "region": "ภาคเหนือ", "athletes": 141, "affiliates": 3},
+    {"province": "ภูเก็ต", "region": "ภาคใต้", "athletes": 93, "affiliates": 6},
+    {"province": "ประจวบคีรีขันธ์", "region": "ภาคตะวันตก", "athletes": 23, "affiliates": 1},
+    {"province": "สุราษฎร์ธานี", "region": "ภาคใต้", "athletes": 10, "affiliates": 3}
+  ],
+  "topGyms": [
+    {"name": "Crossfit Naga", "athletes": 64, "province": "กรุงเทพฯ", "region": "ภาคกลาง"},
+    {"name": "CrossFit Pulmo", "athletes": 64, "province": "เชียงใหม่", "region": "ภาคเหนือ"},
+    {"name": "Thonglor CrossFit", "athletes": 58, "province": "กรุงเทพฯ", "region": "ภาคกลาง"},
+    {"name": "East West CrossFit", "athletes": 42, "province": "กรุงเทพฯ", "region": "ภาคกลาง"},
+    {"name": "Motus Cultura CrossFit", "athletes": 42, "province": "ภูเก็ต", "region": "ภาคใต้"}
+  ],
+  "features": {
+    "landing": "Compact 2-column feature grid, removed verbose sections",
+    "workouts": "Tab navigation (WORKOUT · 1 · 2 · 3), percentile tables for 26.1/26.2/26.3",
+    "provinces": "Top 5 Gym ranking by athlete count",
+    "movements": "127 movements, 35 detailed, YouTube previews",
+    "recommendation": "Movement V3 guided learning system"
+  },
+  "growth": [
+    {"year": 2017, "total": 170},
+    {"year": 2018, "total": 269},
+    {"year": 2019, "total": 191},
+    {"year": 2020, "total": 146},
+    {"year": 2021, "total": 155},
+    {"year": 2022, "total": 175},
+    {"year": 2023, "total": 198},
+    {"year": 2024, "total": 232},
+    {"year": 2025, "total": 360},
+    {"year": 2026, "total": 604}
+  ]
+}
