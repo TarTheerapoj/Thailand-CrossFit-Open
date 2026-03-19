@@ -1,0 +1,343 @@
+{
+  "siteInfo": {
+    "name": "ลุยดิวะ",
+    "title": "CrossFit Open Thailand 2026",
+    "description": "วิเคราะห์ผลการแข่งขัน CrossFit Open Thailand 2026",
+    "url": "https://three-pearl-56.vercel.app",
+    "year": 2026
+  },
+  
+  "overview": {
+    "totalAthletes": 604,
+    "totalAffiliates": 24,
+    "totalProvinces": 7,
+    "totalRegions": 4,
+    "participationGrowth": {
+      "2017": 170,
+      "2018": 269,
+      "2019": 191,
+      "2020": 146,
+      "2021": 155,
+      "2022": 175,
+      "2023": 198,
+      "2024": 232,
+      "2025": 360,
+      "2026": 604
+    }
+  },
+
+  "divisions": {
+    "menRx": 112,
+    "womenRx": 98,
+    "menScaled": 68,
+    "womenScaled": 54,
+    "menMasters35": 28,
+    "womenMasters35": 22,
+    "menMasters40": 8,
+    "womenMasters40": 6,
+    "totalMasters": 64,
+    "rxTotal": 210,
+    "scaledTotal": 122
+  },
+
+  "workouts": [
+    {
+      "id": "26.1",
+      "name": "26.1",
+      "type": "For Time",
+      "timeCap": "12 นาที",
+      "movements": ["Wall-Ball Shots", "Box Jump-Overs", "Medicine-Ball Box Step-Overs"],
+      "rxEquipment": {
+        "women": "14-lb medicine ball, 9-ft target, 20-inch box",
+        "men": "20-lb medicine ball, 10-ft target, 24-inch box"
+      },
+      "thailandStats": {
+        "men": {
+          "count": 112,
+          "average": 210,
+          "top": 245,
+          "percentiles": {
+            "99th": 245,
+            "95th": 235,
+            "90th": 225,
+            "80th": 215,
+            "75th": 210,
+            "60th": 200,
+            "50th": 190,
+            "40th": 180,
+            "25th": 165,
+            "20th": 155
+          }
+        },
+        "women": {
+          "count": 98,
+          "average": 195,
+          "top": 198,
+          "percentiles": {
+            "99th": 198,
+            "95th": 190,
+            "90th": 185,
+            "80th": 175,
+            "75th": 170,
+            "60th": 160,
+            "50th": 150,
+            "40th": 140,
+            "25th": 125,
+            "20th": 115
+          }
+        }
+      }
+    },
+    {
+      "id": "26.2",
+      "name": "26.2",
+      "type": "For Time",
+      "timeCap": "15 นาที",
+      "movements": ["Deadlifts", "Handstand Push-Ups"],
+      "rxEquipment": {
+        "women": "185 lb",
+        "men": "275 lb"
+      },
+      "thailandStats": {
+        "men": {
+          "finished": 89,
+          "timedOut": 23,
+          "fastestTime": "8:45",
+          "avgRepsTimedOut": 142,
+          "topRepsTimedOut": 180
+        },
+        "women": {
+          "finished": 76,
+          "timedOut": 22,
+          "fastestTime": "9:12",
+          "avgRepsTimedOut": 128,
+          "topRepsTimedOut": 165
+        },
+        "percentilesTimedOut": {
+          "men": {
+            "99th": 180,
+            "95th": 165,
+            "90th": 155,
+            "80th": 145,
+            "75th": 140,
+            "60th": 130,
+            "50th": 120,
+            "40th": 110,
+            "25th": 95,
+            "20th": 85
+          },
+          "women": {
+            "99th": 165,
+            "95th": 150,
+            "90th": 140,
+            "80th": 130,
+            "75th": 125,
+            "60th": 115,
+            "50th": 105,
+            "40th": 95,
+            "25th": 80,
+            "20th": 70
+          }
+        }
+      }
+    },
+    {
+      "id": "26.3",
+      "name": "26.3",
+      "type": "For Time",
+      "timeCap": "16 นาที",
+      "movements": ["Burpees Over the Bar", "Cleans", "Thrusters"],
+      "rxEquipment": {
+        "women": ["65 lb", "75 lb", "85 lb"],
+        "men": ["95 lb", "115 lb", "135 lb"]
+      },
+      "thailandStats": {
+        "men": {
+          "count": 112,
+          "average": 185,
+          "top": 240,
+          "percentiles": {
+            "99th": 240,
+            "95th": 220,
+            "90th": 205,
+            "80th": 190,
+            "75th": 180,
+            "60th": 165,
+            "50th": 150,
+            "40th": 135,
+            "25th": 115,
+            "20th": 105
+          }
+        },
+        "women": {
+          "count": 98,
+          "average": 168,
+          "top": 258,
+          "percentiles": {
+            "99th": 258,
+            "95th": 230,
+            "90th": 215,
+            "80th": 195,
+            "75th": 185,
+            "60th": 170,
+            "50th": 155,
+            "40th": 140,
+            "25th": 120,
+            "20th": 110
+          }
+        }
+      }
+    }
+  ],
+
+  "geographicData": {
+    "regions": [
+      {
+        "name": "ภาคกลาง",
+        "color": "#3b82f6",
+        "provinces": ["กรุงเทพฯ"],
+        "athletes": 331,
+        "affiliates": 11
+      },
+      {
+        "name": "ภาคเหนือ",
+        "color": "#f59e0b",
+        "provinces": ["เชียงใหม่"],
+        "athletes": 141,
+        "affiliates": 3
+      },
+      {
+        "name": "ภาคใต้",
+        "color": "#22c55e",
+        "provinces": ["ภูเก็ต", "สุราษฎร์ธานี"],
+        "athletes": 103,
+        "affiliates": 9
+      },
+      {
+        "name": "ภาคตะวันตก",
+        "color": "#a855f7",
+        "provinces": ["ประจวบคีรีขันธ์"],
+        "athletes": 23,
+        "affiliates": 1
+      }
+    ],
+    
+    "provinces": [
+      {
+        "name": "กรุงเทพฯ",
+        "region": "ภาคกลาง",
+        "athletes": 331,
+        "affiliates": 11,
+        "percentage": 54.8
+      },
+      {
+        "name": "เชียงใหม่",
+        "region": "ภาคเหนือ",
+        "athletes": 141,
+        "affiliates": 3,
+        "percentage": 23.3
+      },
+      {
+        "name": "ภูเก็ต",
+        "region": "ภาคใต้",
+        "athletes": 93,
+        "affiliates": 6,
+        "percentage": 15.4
+      },
+      {
+        "name": "ประจวบคีรีขันธ์",
+        "region": "ภาคตะวันตก",
+        "athletes": 23,
+        "affiliates": 1,
+        "percentage": 3.8
+      },
+      {
+        "name": "สุราษฎร์ธานี",
+        "region": "ภาคใต้",
+        "athletes": 10,
+        "affiliates": 3,
+        "percentage": 1.7
+      }
+    ],
+
+    "topGyms": [
+      {
+        "rank": 1,
+        "name": "Crossfit Naga",
+        "athletes": 64,
+        "province": "กรุงเทพฯ",
+        "region": "ภาคกลาง"
+      },
+      {
+        "rank": 2,
+        "name": "CrossFit Pulmo",
+        "athletes": 64,
+        "province": "เชียงใหม่",
+        "region": "ภาคเหนือ"
+      },
+      {
+        "rank": 3,
+        "name": "Thonglor CrossFit",
+        "athletes": 58,
+        "province": "กรุงเทพฯ",
+        "region": "ภาคกลาง"
+      },
+      {
+        "rank": 4,
+        "name": "East West CrossFit",
+        "athletes": 42,
+        "province": "กรุงเทพฯ",
+        "region": "ภาคกลาง"
+      },
+      {
+        "rank": 5,
+        "name": "Motus Cultura CrossFit",
+        "athletes": 42,
+        "province": "ภูเก็ต",
+        "region": "ภาคใต้"
+      }
+    ]
+  },
+
+  "keyInsights": {
+    "participation": {
+      "growth2025to2026": "67.8%",
+      "peakYear": 2026,
+      "totalGrowthSince2017": "255.3%",
+      "genderDistribution2026": {
+        "men": "51%",
+        "women": "49%"
+      }
+    },
+    "geographic": {
+      "bangkokDominance": "54.8% of all athletes",
+      "top3Provinces": ["กรุงเทพฯ", "เชียงใหม่", "ภูเก็ต"],
+      "regionalDistribution": {
+        "ภาคกลาง": "54.8%",
+        "ภาคเหนือ": "23.3%",
+        "ภาคใต้": "17.1%",
+        "ภาคตะวันตก": "3.8%"
+      }
+    },
+    "workoutAnalysis": {
+      "hardestWorkout": "26.3 (16 นาที, 3 movements, increasing weights)",
+      "fastestCompletion": "26.2 (deadlifts + handstand push-ups)",
+      "mostAccessible": "26.1 (wall balls + box jumps)",
+      "averageCompletionRate": {
+        "26.1": "100% (reps-based)",
+        "26.2": "27% finished, 73% timed out",
+        "26.3": "100% (reps-based)"
+      }
+    }
+  },
+
+  "dataSources": {
+    "rankings": [
+      "thailand-26-1-rankings.csv",
+      "26.2 - Sheet1.csv", 
+      "26.3 - Sheet1.csv"
+    ],
+    "affiliateData": "athletes.ts",
+    "lastUpdated": "2026-03-19"
+  }
+}
